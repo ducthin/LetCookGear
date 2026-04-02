@@ -1,0 +1,4 @@
+# Local environment files for backend root
+.env
+.env.*
+!.env.example

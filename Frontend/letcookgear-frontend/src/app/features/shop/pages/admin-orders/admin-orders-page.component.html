@@ -1,0 +1,44 @@
+<section class="admin-orders-page">
+  <header>
+    <h1>Quản lý đơn hàng</h1>
+    <button type="button" (click)="reload()" [disabled]="loading()">Tải lại</button>
+  </header>
+
+  <p class="error-box" *ngIf="error()">{{ error() }}</p>
+  <p class="success-box" *ngIf="success()">{{ success() }}</p>
+  <p *ngIf="loading()">Đang tải đơn hàng...</p>
+
+  <section class="orders-list" *ngIf="!loading() && orders().length">
+    <article class="order-card" *ngFor="let order of orders()">
+      <div class="headline">
+        <h2>{{ order.orderCode }}</h2>
+        <strong>{{ order.finalAmount | number: '1.0-0' }} VND</strong>
+      </div>
+
+      <p>
+        Trạng thái hiện tại: <strong>{{ displayOrderStatus(order.status) }}</strong> • Thanh toán:
+        {{ displayPaymentStatus(order.paymentStatus) }} ({{ displayPaymentMethod(order.paymentMethod) }})
+      </p>
+
+      <label>
+        Cập nhật trạng thái
+        <select
+          [value]="order.status"
+          [disabled]="updatingOrderId() === order.orderId"
+          (change)="updateStatus(order, $any($event.target).value)"
+        >
+          <option *ngFor="let s of transitions" [value]="s">{{ displayOrderStatus(s) }}</option>
+        </select>
+      </label>
+
+      <ul>
+        <li *ngFor="let item of order.items">
+          {{ item.productName }} ({{ item.sku }}) × {{ item.quantity }}
+          <span>{{ item.lineTotal | number: '1.0-0' }} VND</span>
+        </li>
+      </ul>
+    </article>
+  </section>
+
+  <p *ngIf="!loading() && !orders().length">Chưa có đơn hàng nào.</p>
+</section>

@@ -1,0 +1,80 @@
+.orders-page {
+  display: grid;
+  gap: 14px;
+  padding: 22px 14px 30px;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+header h1 {
+  margin: 0;
+}
+
+header a {
+  color: #155eef;
+  text-decoration: none;
+  font-weight: 700;
+}
+
+.orders-list {
+  display: grid;
+  gap: 12px;
+}
+
+.order-card {
+  border: 1px solid #dbe3f0;
+  border-radius: 12px;
+  background: #ffffff;
+  padding: 14px;
+  display: grid;
+  gap: 8px;
+}
+
+.order-card > header {
+  display: flex;
+  justify-content: space-between;
+}
+
+.order-card h2 {
+  margin: 0;
+  font-size: 1.05rem;
+}
+
+.order-card p {
+  margin: 0;
+  color: #344054;
+}
+
+.detail-link {
+  width: fit-content;
+  color: #155eef;
+  text-decoration: none;
+  font-weight: 700;
+}
+
+ul {
+  margin: 0;
+  padding-left: 18px;
+  display: grid;
+  gap: 6px;
+}
+
+li {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.error-box {
+  margin: 0;
+  color: #b42318;
+}
+
+.empty {
+  color: #5f6d84;
+}

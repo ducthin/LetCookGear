@@ -1,0 +1,43 @@
+<section class="cart-page">
+  <header>
+    <h1>Giỏ hàng cua toi</h1>
+    <a routerLink="/shop/products">Tiếp tục mua sắm</a>
+  </header>
+
+  <p class="error-box" *ngIf="error()">{{ error() }}</p>
+  <p *ngIf="loading()">Đang tải giỏ hàng...</p>
+
+  <ng-container *ngIf="!loading() && cart() as cartData">
+    <p class="empty" *ngIf="!cartData.items.length">Giỏ hàng của bạn đang trống.</p>
+
+    <section class="items" *ngIf="cartData.items.length">
+      <article class="item" *ngFor="let item of cartData.items">
+        <div>
+          <h2>
+            <a [routerLink]="['/shop/products', item.productSlug]">{{ item.productName }}</a>
+          </h2>
+          <p>{{ item.variantName }} • {{ item.sku }}</p>
+        </div>
+
+        <div class="qty-box">
+          <button type="button" (click)="decrease(item)">-</button>
+          <span>{{ item.quantity }}</span>
+          <button type="button" (click)="increase(item)">+</button>
+        </div>
+
+        <strong>{{ item.lineTotal | number: '1.0-0' }} VND</strong>
+        <button type="button" class="remove" (click)="remove(item.itemId)">Xóa</button>
+      </article>
+
+      <footer class="summary">
+        <p>Tổng số lượng: <strong>{{ cartData.totalItems }}</strong></p>
+        <p>Tạm tính: <strong>{{ cartData.subtotal | number: '1.0-0' }} VND</strong></p>
+
+        <div class="actions">
+          <button type="button" class="ghost" (click)="clearCart()">Xóa giỏ hàng</button>
+          <button type="button" (click)="goCheckout()" [disabled]="!hasItems()">Thanh toán</button>
+        </div>
+      </footer>
+    </section>
+  </ng-container>
+</section>

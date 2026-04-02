@@ -1,0 +1,35 @@
+<section class="auth-wrapper">
+  <article class="auth-card">
+    <h1>Đăng nhập</h1>
+    <p>Đăng nhập để quản lý tài khoản và đơn hàng của bạn.</p>
+
+    <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      <label>
+        Email
+        <input type="email" formControlName="email" placeholder="ban@example.com" />
+      </label>
+      <small class="field-error" *ngIf="form.controls.email.touched && form.controls.email.invalid">
+        Vui lòng nhập email hợp lệ.
+      </small>
+
+      <label>
+        Mật khẩu
+        <input type="password" formControlName="password" placeholder="Nhap mật khẩu" />
+      </label>
+      <small class="field-error" *ngIf="form.controls.password.touched && form.controls.password.invalid">
+        Mật khẩu phải có ít nhất 6 ký tự.
+      </small>
+
+      <p class="error-box" *ngIf="error()">{{ error() }}</p>
+
+      <button type="submit" [disabled]="loading()">
+        {{ loading() ? 'Đang đăng nhập...' : 'Đăng nhập' }}
+      </button>
+    </form>
+
+    <p class="switch-link">
+      Chưa có tài khoản?
+      <a routerLink="/auth/register">Đăng ký</a>
+    </p>
+  </article>
+</section>

@@ -1,0 +1,35 @@
+<section class="orders-page">
+  <header>
+    <h1>Đơn hàng của tôi</h1>
+    <a routerLink="/shop/products">Tiếp tục mua sắm</a>
+  </header>
+
+  <p class="error-box" *ngIf="error()">{{ error() }}</p>
+  <p *ngIf="loading()">Đang tải đơn hàng...</p>
+
+  <p *ngIf="!loading() && !orders().length" class="empty">Bạn chưa có đơn hàng nào.</p>
+
+  <section class="orders-list" *ngIf="orders().length">
+    <article class="order-card" *ngFor="let order of orders()">
+      <header>
+        <h2>{{ order.orderCode }}</h2>
+        <strong>{{ order.finalAmount | number: '1.0-0' }} VND</strong>
+      </header>
+
+      <p>
+        Trạng thái: {{ displayOrderStatus(order.status) }} • Thanh toán: {{ displayPaymentStatus(order.paymentStatus) }}
+        ({{ displayPaymentMethod(order.paymentMethod) }})
+      </p>
+      <p>Đặt lúc: {{ order.placedAt | date: 'medium' }}</p>
+
+      <a class="detail-link" [routerLink]="['/shop/orders', order.orderId]">Xem chi tiết</a>
+
+      <ul>
+        <li *ngFor="let item of order.items">
+          {{ item.productName }} ({{ item.sku }}) × {{ item.quantity }}
+          <span>{{ item.lineTotal | number: '1.0-0' }} VND</span>
+        </li>
+      </ul>
+    </article>
+  </section>
+</section>

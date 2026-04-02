@@ -1,0 +1,86 @@
+.order-detail-page {
+  display: grid;
+  gap: 14px;
+  padding: 22px 14px 30px;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+header h1 {
+  margin: 0;
+}
+
+header a {
+  color: #155eef;
+  text-decoration: none;
+  font-weight: 700;
+}
+
+.detail-card {
+  border: 1px solid #dbe3f0;
+  border-radius: 12px;
+  background: #ffffff;
+  padding: 14px;
+  display: grid;
+  gap: 12px;
+}
+
+.summary p {
+  margin: 0 0 6px;
+}
+
+.cancel-btn {
+  width: fit-content;
+  border: 0;
+  border-radius: 10px;
+  padding: 10px 14px;
+  font: inherit;
+  font-weight: 700;
+  color: #ffffff;
+  background: #b42318;
+  cursor: pointer;
+}
+
+.cancel-btn:disabled {
+  opacity: 0.65;
+}
+
+ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 10px;
+}
+
+li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid #edf2f7;
+  border-radius: 10px;
+  padding: 10px;
+}
+
+li p {
+  margin: 0;
+  font-weight: 600;
+}
+
+li small {
+  color: #5f6d84;
+}
+
+.error-box {
+  margin: 0;
+  color: #b42318;
+}
+
+.success-box {
+  margin: 0;
+  color: #067647;
+}

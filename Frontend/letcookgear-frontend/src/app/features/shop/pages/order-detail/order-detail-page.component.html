@@ -1,0 +1,41 @@
+<section class="order-detail-page">
+  <header>
+    <h1>Chi tiết đơn hàng</h1>
+    <a routerLink="/shop/orders">← Quay lại danh sách đơn</a>
+  </header>
+
+  <p class="error-box" *ngIf="error()">{{ error() }}</p>
+  <p class="success-box" *ngIf="success()">{{ success() }}</p>
+  <p *ngIf="loading()">Đang tải chi tiết đơn hàng...</p>
+
+  <article class="detail-card" *ngIf="!loading() && order() as o">
+    <div class="summary">
+      <p><strong>Mã đơn:</strong> {{ o.orderCode }}</p>
+      <p><strong>Trạng thái:</strong> {{ displayOrderStatus(o.status) }}</p>
+      <p><strong>Thanh toán:</strong> {{ displayPaymentStatus(o.paymentStatus) }} ({{ displayPaymentMethod(o.paymentMethod) }})</p>
+      <p><strong>Đặt lúc:</strong> {{ o.placedAt | date: 'medium' }}</p>
+      <p><strong>Tổng tiền:</strong> {{ o.finalAmount | number: '1.0-0' }} VND</p>
+    </div>
+
+    <button
+      type="button"
+      class="cancel-btn"
+      *ngIf="canCancel(o)"
+      [disabled]="cancelling()"
+      (click)="cancelOrder(o.orderId)"
+    >
+      {{ cancelling() ? 'Đang hủy đơn...' : 'Hủy đơn hàng' }}
+    </button>
+
+    <h2>Sản phẩm</h2>
+    <ul>
+      <li *ngFor="let item of o.items">
+        <div>
+          <p>{{ item.productName }}</p>
+          <small>{{ item.sku }} • x{{ item.quantity }}</small>
+        </div>
+        <strong>{{ item.lineTotal | number: '1.0-0' }} VND</strong>
+      </li>
+    </ul>
+  </article>
+</section>

@@ -1,0 +1,35 @@
+<section class="profile-wrapper">
+  <article class="profile-card" *ngIf="!loading(); else loadingTpl">
+    <h1>Hồ sơ của tôi</h1>
+
+    <p class="error-box" *ngIf="error()">{{ error() }}</p>
+
+    <ng-container *ngIf="profile() as p">
+      <dl>
+        <div>
+          <dt>Họ và tên</dt>
+          <dd>{{ p.fullName }}</dd>
+        </div>
+        <div>
+          <dt>Email</dt>
+          <dd>{{ p.email }}</dd>
+        </div>
+        <div>
+          <dt>Số điện thoại</dt>
+          <dd>{{ p.phone || 'Không có' }}</dd>
+        </div>
+        <div>
+          <dt>Vai trò</dt>
+          <dd>{{ p.roles.join(', ') }}</dd>
+        </div>
+      </dl>
+    </ng-container>
+  </article>
+
+  <ng-template #loadingTpl>
+    <article class="profile-card">
+      <h1>Hồ sơ của tôi</h1>
+      <p>Đang tải thông tin hồ sơ...</p>
+    </article>
+  </ng-template>
+</section>

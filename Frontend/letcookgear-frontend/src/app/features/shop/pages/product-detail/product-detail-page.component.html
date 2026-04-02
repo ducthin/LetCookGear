@@ -1,0 +1,48 @@
+<section class="detail-page" *ngIf="!loading(); else loadingTpl">
+  <p class="error-box" *ngIf="error()">{{ error() }}</p>
+
+  <article *ngIf="product() as p" class="detail-card">
+    <a routerLink="/shop/products" class="back-link">← Quay lại danh mục</a>
+
+    <h1>{{ p.name }}</h1>
+    <p class="meta">{{ p.categoryName }} • {{ p.brandName }}</p>
+    <p class="short-desc">{{ p.shortDescription || 'Chưa có mô tả ngắn.' }}</p>
+    <p class="description">{{ p.description || 'Chưa có mô tả chi tiết cho sản phẩm.' }}</p>
+
+    <section class="variant-box" *ngIf="p.variants.length; else noVariantTpl">
+      <h2>Chọn phiên bản</h2>
+      <div class="variant-list">
+        <button
+          type="button"
+          *ngFor="let variant of p.variants"
+          [class.active]="selectedVariantId() === variant.id"
+          (click)="setVariant(variant.id)"
+        >
+          <span>{{ variant.variantName }}</span>
+          <strong>{{ variant.price | number: '1.0-0' }} VND</strong>
+        </button>
+      </div>
+
+      <label>
+        Số lượng
+        <input type="number" min="1" [value]="quantity()" (input)="setQuantity($any($event.target).value)" />
+      </label>
+
+      <button type="button" class="buy-btn" (click)="addToCart()" [disabled]="adding()">
+        {{ adding() ? 'Đang thêm...' : 'Thêm vào giỏ' }}
+      </button>
+    </section>
+
+    <ng-template #noVariantTpl>
+      <p class="muted">Sản phẩm này chưa có phiên bản để mua.</p>
+    </ng-template>
+  </article>
+</section>
+
+<ng-template #loadingTpl>
+  <section class="detail-page">
+    <article class="detail-card">
+      <p>Đang tải chi tiết sản phẩm...</p>
+    </article>
+  </section>
+</ng-template>

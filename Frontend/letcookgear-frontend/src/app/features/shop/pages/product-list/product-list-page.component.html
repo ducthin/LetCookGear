@@ -1,0 +1,66 @@
+<section class="catalog-page">
+  <header class="catalog-header">
+    <div>
+      <h1>Danh mục sản phẩm</h1>
+      <p>Khám phá sản phẩm và thêm vào giỏ hàng của bạn.</p>
+    </div>
+    <button type="button" (click)="reload()" [disabled]="loading()">Tải lại</button>
+  </header>
+
+  <section class="filters">
+    <label>
+      Tìm kiếm
+      <input type="text" [value]="searchTerm()" (input)="onSearchInput($any($event.target).value)" placeholder="Tìm theo tên, slug..." />
+    </label>
+
+    <label>
+      Danh mục
+      <select (change)="onCategoryChange($any($event.target).value)">
+        <option value="">Tất cả danh mục</option>
+        <option *ngFor="let category of categories()" [value]="category.id">{{ category.name }}</option>
+      </select>
+    </label>
+
+    <label>
+      Thương hiệu
+      <select (change)="onBrandChange($any($event.target).value)">
+        <option value="">Tất cả thương hiệu</option>
+        <option *ngFor="let brand of brands()" [value]="brand.id">{{ brand.name }}</option>
+      </select>
+    </label>
+  </section>
+
+  <p class="error-box" *ngIf="error()">{{ error() }}</p>
+
+  <p class="hint" *ngIf="loading()">Đang tải sản phẩm...</p>
+  <p class="hint" *ngIf="!loading() && !filteredProducts().length">Không tìm thấy sản phẩm phù hợp bộ lọc.</p>
+
+  <section class="grid" *ngIf="filteredProducts().length">
+    <article class="product-card" *ngFor="let product of filteredProducts()">
+      <h2>
+        <a [routerLink]="['/shop/products', product.slug]">{{ product.name }}</a>
+      </h2>
+      <p class="meta">{{ product.categoryName }} • {{ product.brandName }}</p>
+      <p class="desc">{{ product.shortDescription || 'Chưa có mô tả ngắn.' }}</p>
+
+      <p class="price" *ngIf="product.variants.length; else noVariantTpl">
+        {{ product.variants[0].price | number: '1.0-0' }} VND
+      </p>
+      <ng-template #noVariantTpl>
+        <p class="price muted">Chưa có phiên bản sẵn sàng bán</p>
+      </ng-template>
+
+      <div class="actions">
+        <a class="btn ghost" [routerLink]="['/shop/products', product.slug]">Xem</a>
+        <button
+          type="button"
+          class="btn"
+          (click)="addToCart(product)"
+          [disabled]="!product.variants.length || addingProductId() === product.id"
+        >
+          {{ addingProductId() === product.id ? 'Đang thêm...' : 'Thêm vào giỏ' }}
+        </button>
+      </div>
+    </article>
+  </section>
+</section>

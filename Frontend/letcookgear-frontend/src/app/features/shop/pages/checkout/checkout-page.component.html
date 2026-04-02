@@ -1,0 +1,64 @@
+<section class="checkout-page">
+  <header>
+    <h1>Thanh toán</h1>
+    <a routerLink="/shop/cart">← Quay lại giỏ hàng</a>
+  </header>
+
+  <p class="error-box" *ngIf="error()">{{ error() }}</p>
+  <p class="success-box" *ngIf="success()">{{ success() }}</p>
+
+  <p *ngIf="loading()">Đang chuẩn bị thanh toán...</p>
+
+  <div class="layout" *ngIf="!loading()">
+    <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      <label>
+        Tên người nhận
+        <input type="text" formControlName="receiverName" />
+      </label>
+
+      <label>
+        Số điện thoại
+        <input type="text" formControlName="phone" />
+      </label>
+
+      <label>
+        Tỉnh/Thành phố
+        <input type="text" formControlName="province" />
+      </label>
+
+      <label>
+        Quận/Huyện
+        <input type="text" formControlName="district" />
+      </label>
+
+      <label>
+        Phường/Xã
+        <input type="text" formControlName="ward" />
+      </label>
+
+      <label>
+        Địa chỉ chi tiết
+        <input type="text" formControlName="detail" />
+      </label>
+
+      <label>
+        Phương thức thanh toán
+        <select formControlName="paymentMethod">
+          <option *ngFor="let method of paymentMethods" [value]="method">{{ displayPaymentMethod(method) }}</option>
+        </select>
+      </label>
+
+      <button type="submit" [disabled]="!canCheckout()">
+        {{ submitting() ? 'Đang đặt đơn...' : 'Đặt đơn' }}
+      </button>
+    </form>
+
+    <aside *ngIf="cart() as cartData">
+      <h2>Tóm tắt đơn hàng</h2>
+      <p>Số lượng: {{ cartData.totalItems }}</p>
+      <p>Tạm tính: {{ cartData.subtotal | number: '1.0-0' }} VND</p>
+      <p>Phí vận chuyển: 30,000 VND</p>
+      <p class="final">Tổng dự kiến: {{ cartData.subtotal + 30000 | number: '1.0-0' }} VND</p>
+    </aside>
+  </div>
+</section>
