@@ -1,0 +1,214 @@
+<section class="home-root bg-[#141414] text-[#FFFFFF]">
+  <app-site-header brandName="LetCookGear" />
+
+  <div class="hero-shell">
+    <div class="hero-wrap">
+      <div class="hero-content">
+        <p class="eyebrow text-[#00C8FF]">PERFORMANCE GAMING GEAR</p>
+        <h1 class="text-[#FFFFFF]">GEAR UP. PLAY HARD.</h1>
+        <p class="hero-sub text-[#A3A3A3]">
+          Build your winning setup with precision keyboards, esports mice, and pro-grade audio tuned for competitive play.
+        </p>
+        <div class="hero-cta-row">
+          <a
+            class="cta border-[#00C8FF] text-[#00C8FF] hover:bg-[#00C8FF] hover:text-[#141414]"
+            routerLink="/shop/products"
+          >
+            Khám phá ngay
+          </a>
+          <a class="ghost-link text-[#A3A3A3]" routerLink="/shop/products">
+            Xem deal trong tuần
+          </a>
+        </div>
+      </div>
+
+      <div class="hero-panel bg-[#212121]">
+        <p class="panel-title text-[#FFFFFF]">Quick Launch</p>
+        <div class="quick-actions">
+          <a class="quick-card" *ngFor="let action of quickActions" [routerLink]="action.link">
+            <h3 class="text-[#FFFFFF]">{{ action.title }}</h3>
+            <p class="text-[#A3A3A3]">{{ action.subtitle }}</p>
+          </a>
+        </div>
+      </div>
+
+      <div class="hero-glow" aria-hidden="true"></div>
+    </div>
+
+    <section class="live-strip bg-[#212121]">
+      <article class="live-item" *ngFor="let stat of liveStats">
+        <p class="value text-[#00C8FF]">{{ stat.value }}</p>
+        <p class="label text-[#A3A3A3]">{{ stat.label }}</p>
+      </article>
+    </section>
+  </div>
+
+  <section class="flash-zone bg-[#212121]">
+    <div class="flash-head">
+      <div>
+        <p class="eyebrow text-[#00C8FF]">FLASH SALE</p>
+        <h2 class="text-[#FFFFFF]">Deal giảm giá giờ vàng</h2>
+      </div>
+      <div class="countdown">
+        <div class="time-box"><span>{{ countdown.days }}</span><small>Ngày</small></div>
+        <div class="time-box"><span>{{ countdown.hours }}</span><small>Giờ</small></div>
+        <div class="time-box"><span>{{ countdown.minutes }}</span><small>Phút</small></div>
+        <div class="time-box"><span>{{ countdown.seconds }}</span><small>Giây</small></div>
+      </div>
+    </div>
+
+    <div class="flash-grid">
+      <article class="product-card bg-[#141414]" *ngFor="let item of flashDeals">
+        <div class="media-wrap">
+          <img [src]="item.imageUrl" [alt]="item.name" loading="lazy" />
+          <span class="badge text-[#00C8FF]" *ngIf="item.badge">{{ item.badge }}</span>
+        </div>
+        <div class="card-body">
+          <h3 class="text-[#FFFFFF]">{{ item.name }}</h3>
+          <div class="price-row">
+            <p class="text-[#A3A3A3]">{{ formatPrice(item.price) }}</p>
+            <small *ngIf="item.oldPrice">{{ formatPrice(item.oldPrice) }}</small>
+          </div>
+          <div class="spec-row" *ngIf="item.specs?.length">
+            <span *ngFor="let spec of item.specs">{{ spec }}</span>
+          </div>
+          <a class="card-link text-[#00C8FF]" [routerLink]="item.link">Mua ngay</a>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <section class="products-zone">
+    <div class="section-head">
+      <h2 class="text-[#FFFFFF]">Sản phẩm nổi bật</h2>
+      <a routerLink="/shop/products" class="text-[#A3A3A3]">Xem tất cả</a>
+    </div>
+
+    <div class="product-grid">
+      <article class="product-card bg-[#212121]" *ngFor="let item of mockData; let i = index" [style.animationDelay.ms]="i * 90">
+        <div class="media-wrap">
+          <img [src]="item.imageUrl" [alt]="item.name" loading="lazy" />
+          <span class="badge text-[#00C8FF]" *ngIf="item.badge">{{ item.badge }}</span>
+        </div>
+        <div class="card-body">
+          <h3 class="text-[#FFFFFF]">{{ item.name }}</h3>
+          <p class="text-[#A3A3A3]">{{ formatPrice(item.price) }}</p>
+          <div class="spec-row" *ngIf="item.specs?.length">
+            <span *ngFor="let spec of item.specs">{{ spec }}</span>
+          </div>
+          <a class="card-link text-[#00C8FF]" routerLink="/shop/products">Chi tiết</a>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <section class="cluster-zone" *ngFor="let cluster of productClusters; let clusterIndex = index">
+    <div class="section-head">
+      <h2 class="text-[#FFFFFF]">{{ cluster.title }}</h2>
+      <a [routerLink]="cluster.ctaLink" class="text-[#A3A3A3]">{{ cluster.ctaLabel }}</a>
+    </div>
+
+    <div class="cluster-tabs">
+      <button
+        type="button"
+        *ngFor="let tab of cluster.tabs; let tabIndex = index"
+        [class.active]="activeClusterTab[clusterIndex] === tabIndex"
+        (click)="setActiveTab(clusterIndex, tabIndex)"
+      >
+        {{ tab.label }}
+      </button>
+    </div>
+
+    <div class="product-grid">
+      <article class="product-card bg-[#212121]" *ngFor="let item of getVisibleClusterItems(clusterIndex)">
+        <div class="media-wrap">
+          <img [src]="item.imageUrl" [alt]="item.name" loading="lazy" />
+          <span class="badge text-[#00C8FF]" *ngIf="item.badge">{{ item.badge }}</span>
+        </div>
+        <div class="card-body">
+          <h3 class="text-[#FFFFFF]">{{ item.name }}</h3>
+          <p class="text-[#A3A3A3]">{{ formatPrice(item.price) }}</p>
+          <div class="spec-row" *ngIf="item.specs?.length">
+            <span *ngFor="let spec of item.specs">{{ spec }}</span>
+          </div>
+          <a class="card-link text-[#00C8FF]" routerLink="/shop/products">Chi tiết</a>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <section class="utility-zone">
+    <div class="utility-grid">
+      <article class="utility-card bg-[#212121]" *ngFor="let utility of utilityFeatures">
+        <h3 class="text-[#FFFFFF]">{{ utility.title }}</h3>
+        <p class="text-[#A3A3A3]">{{ utility.description }}</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="bundle-zone">
+    <div class="section-head">
+      <h2 class="text-[#FFFFFF]">Combo ưu đãi tuần này</h2>
+      <a routerLink="/shop/products" class="text-[#A3A3A3]">Tất cả combo</a>
+    </div>
+
+    <div class="bundle-grid">
+      <article class="bundle-card bg-[#212121]" *ngFor="let deal of bundleDeals">
+        <div class="bundle-discount text-[#00C8FF]">{{ deal.discountText }}</div>
+        <h3 class="text-[#FFFFFF]">{{ deal.title }}</h3>
+        <p class="text-[#A3A3A3]">{{ deal.description }}</p>
+        <a [routerLink]="deal.link" class="text-[#00C8FF]">Mua combo</a>
+      </article>
+    </div>
+  </section>
+
+  <section class="category-zone">
+    <div class="section-head">
+      <h2 class="text-[#FFFFFF]">Danh mục nổi bật</h2>
+      <a routerLink="/shop/products" class="text-[#A3A3A3]">Duyệt kho hàng</a>
+    </div>
+
+    <div class="category-grid">
+      <a class="category-card" *ngFor="let category of categoryHighlights" [routerLink]="category.link">
+        <img [src]="category.imageUrl" [alt]="category.name" loading="lazy" />
+        <div class="overlay bg-[#212121]">
+          <h3 class="text-[#FFFFFF]">{{ category.name }}</h3>
+          <p class="text-[#A3A3A3]">{{ category.countLabel }}</p>
+        </div>
+      </a>
+    </div>
+  </section>
+
+  <section class="newsletter-zone bg-[#212121]">
+    <div>
+      <p class="eyebrow text-[#00C8FF]">JOIN LHC CREW</p>
+      <h2 class="text-[#FFFFFF]">Nhận thông báo drop hàng mới và mã ưu đãi độc quyền</h2>
+      <p class="text-[#A3A3A3]">
+        Cập nhật mỗi tuần về gear mới, flash sale và các preset setup do team kỹ thuật LetCookGear tuyển chọn.
+      </p>
+    </div>
+    <form class="newsletter-form" (submit)="$event.preventDefault()">
+      <input type="email" placeholder="Email của bạn" />
+      <button type="submit" class="cta border-[#00C8FF] text-[#00C8FF] hover:bg-[#00C8FF] hover:text-[#141414]">
+        Đăng ký ngay
+      </button>
+    </form>
+  </section>
+
+  <section class="news-zone">
+    <div class="section-head">
+      <h2 class="text-[#FFFFFF]">Tin tức và Review</h2>
+      <a routerLink="/shop/products" class="text-[#A3A3A3]">Xem thêm</a>
+    </div>
+
+    <div class="news-grid">
+      <article class="news-card bg-[#212121]" *ngFor="let post of articles">
+        <p class="meta text-[#00C8FF]">{{ post.category }} • {{ post.date }}</p>
+        <h3 class="text-[#FFFFFF]">{{ post.title }}</h3>
+        <a [routerLink]="post.link" class="text-[#A3A3A3]">Đọc tiếp</a>
+      </article>
+    </div>
+  </section>
+
+  <app-site-footer />
+</section>

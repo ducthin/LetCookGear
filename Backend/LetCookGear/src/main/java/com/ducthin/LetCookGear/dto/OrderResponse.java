@@ -14,6 +14,7 @@ import lombok.Getter;
 public class OrderResponse {
     private Long orderId;
     private String orderCode;
+    private String checkoutUrl;
     private OrderStatus status;
     private PaymentStatus paymentStatus;
     private PaymentMethod paymentMethod;

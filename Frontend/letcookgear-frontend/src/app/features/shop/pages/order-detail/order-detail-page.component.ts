@@ -40,10 +40,12 @@ export class OrderDetailPageComponent {
     BANK_TRANSFER: 'Chuyển khoản ngân hàng',
     VNPAY: 'VNPAY',
     MOMO: 'MoMo',
+    PAYOS: 'PayOS',
   };
 
   readonly loading = signal(true);
   readonly cancelling = signal(false);
+  readonly retryingPayOs = signal(false);
   readonly error = signal<string | null>(null);
   readonly success = signal<string | null>(null);
   readonly order = signal<Order | null>(null);
@@ -108,6 +110,44 @@ export class OrderDetailPageComponent {
         this.error.set(message);
       },
       complete: () => this.cancelling.set(false),
+    });
+  }
+
+  canRetryPayOs(order: Order | null): boolean {
+    return !!order
+      && order.paymentMethod === 'PAYOS'
+      && order.paymentStatus !== 'PAID'
+      && order.status !== 'CANCELLED'
+      && order.status !== 'RETURNED';
+  }
+
+  retryPayOsPayment(orderId: number): void {
+    this.retryingPayOs.set(true);
+    this.error.set(null);
+    this.success.set(null);
+
+    this.orderService.retryPayOsCheckout(orderId).subscribe({
+      next: (updatedOrder) => {
+        this.order.set(updatedOrder);
+
+        if (!updatedOrder.checkoutUrl) {
+          this.error.set('Không thể tạo liên kết thanh toán PayOS.');
+          this.retryingPayOs.set(false);
+          return;
+        }
+
+        this.success.set(`Đang chuyển tới PayOS cho đơn ${updatedOrder.orderCode}...`);
+        globalThis.location.assign(updatedOrder.checkoutUrl);
+      },
+      error: (err: unknown) => {
+        const fallback = 'Không thể tạo lại liên kết PayOS.';
+        const message =
+          typeof err === 'object' && err !== null && 'error' in err
+            ? String((err as { error?: { message?: string } }).error?.message ?? fallback)
+            : fallback;
+        this.error.set(message);
+      },
+      complete: () => this.retryingPayOs.set(false),
     });
   }
 

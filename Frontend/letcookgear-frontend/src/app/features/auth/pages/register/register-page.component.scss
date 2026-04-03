@@ -1,26 +1,57 @@
 .auth-wrapper {
-  min-height: calc(100dvh - 70px);
+  min-height: calc(100dvh - 72px);
   display: grid;
   place-items: center;
-  padding: 24px;
+  padding: 24px clamp(14px, 3vw, 42px);
+  background:
+    radial-gradient(circle at 88% 12%, rgba(0, 200, 255, 0.14) 0%, rgba(0, 200, 255, 0) 42%),
+    #141414;
 }
 
 .auth-card {
-  width: min(460px, 100%);
-  background: #ffffff;
-  border: 1px solid #dbe3f0;
-  border-radius: 14px;
+  width: min(500px, 100%);
+  background: #212121;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
   padding: 24px;
-  box-shadow: 0 12px 30px rgba(20, 36, 60, 0.08);
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.32);
+}
+
+.card-head {
+  margin-bottom: 8px;
+}
+
+.eyebrow {
+  margin: 0 0 10px;
+  color: #00c8ff;
+  font-size: 0.78rem;
+  letter-spacing: 0.14em;
+  font-weight: 700;
 }
 
 h1 {
   margin: 0;
-  font-size: 1.8rem;
+  color: #ffffff;
+  font-size: 1.9rem;
 }
 
 p {
-  color: #5f6d84;
+  color: #a3a3a3;
+}
+
+.quick-links {
+  display: flex;
+  gap: 14px;
+  margin: 14px 0 8px;
+}
+
+.quick-links a {
+  color: #00c8ff;
+  text-decoration: none;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 form {
@@ -32,27 +63,65 @@ form {
 label {
   display: grid;
   gap: 6px;
-  color: #243145;
+  color: #d5d5d5;
   font-weight: 600;
 }
 
 input {
-  border: 1px solid #c8d3e5;
-  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: #2f3338;
+  color: #ffffff;
+  border-radius: 8px;
   padding: 10px 12px;
   font: inherit;
 }
 
+input::placeholder {
+  color: #b8bcc2;
+}
+
+input:focus {
+  outline: none;
+  border-color: #00c8ff;
+}
+
+.password-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px;
+}
+
+.toggle-password {
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: #3d4349;
+  color: #d7dbe0;
+  border-radius: 8px;
+  padding: 0 12px;
+  font: inherit;
+  font-size: 0.82rem;
+  cursor: pointer;
+}
+
+.toggle-password:hover {
+  border-color: #00c8ff;
+  color: #00c8ff;
+}
+
 button {
   margin-top: 6px;
-  border: 0;
-  border-radius: 10px;
+  border: 1px solid #00c8ff;
+  border-radius: 8px;
   padding: 11px 14px;
   font: inherit;
   font-weight: 700;
-  color: #ffffff;
-  background: #1570ef;
+  color: #00c8ff;
+  background: transparent;
   cursor: pointer;
+}
+
+button:hover {
+  background: #00c8ff;
+  color: #141414;
 }
 
 button:disabled {
@@ -62,7 +131,15 @@ button:disabled {
 
 .field-error,
 .error-box {
-  color: #b42318;
+  color: #ff7f7f;
+}
+
+.error-box {
+  margin: 2px 0;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 127, 127, 0.4);
+  background: rgba(255, 127, 127, 0.08);
 }
 
 .switch-link {
@@ -71,6 +148,6 @@ button:disabled {
 
 .switch-link a {
   font-weight: 700;
-  color: #1570ef;
+  color: #00c8ff;
   text-decoration: none;
 }

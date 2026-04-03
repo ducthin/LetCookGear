@@ -37,6 +37,7 @@ export class AdminOrdersPageComponent {
     BANK_TRANSFER: 'Chuyển khoản ngân hàng',
     VNPAY: 'VNPAY',
     MOMO: 'MoMo',
+    PAYOS: 'PayOS',
   };
 
   readonly loading = signal(true);

@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -24,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AuthService {
 
     private final UserRepository userRepository;
@@ -34,15 +36,17 @@ public class AuthService {
     private final JwtService jwtService;
 
     public AuthResponse login(AuthRequest request) {
+        log.debug("Login attempt for email={}", request.getEmail());
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
 
         User user = userRepository
-                .findByEmail(request.getEmail())
+            .findByEmailWithRoles(request.getEmail())
             .orElseThrow(() -> new IllegalArgumentException("Thông tin đăng nhập không hợp lệ"));
 
         UserDetails userDetails = userDetailsService.loadUserByUsername(user.getEmail());
         List<String> roles = user.getRoles().stream().map(Role::getName).toList();
+        log.debug("Login success for email={} with roles={}", user.getEmail(), roles);
         String token = jwtService.generateToken(userDetails, Map.of("roles", roles, "name", user.getFullName()));
 
         return new AuthResponse(
@@ -51,7 +55,7 @@ public class AuthService {
 
     public AuthMeResponse me(String email) {
         User user = userRepository
-                .findByEmail(email)
+                .findByEmailWithRoles(email)
                 .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy người dùng"));
 
         List<String> roles = user.getRoles().stream().map(Role::getName).toList();

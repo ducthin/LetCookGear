@@ -2,6 +2,7 @@
   display: grid;
   gap: 14px;
   padding: 22px 14px 30px;
+  color: #ffffff;
 }
 
 header {
@@ -15,15 +16,15 @@ header h1 {
 }
 
 header a {
-  color: #155eef;
+  color: #00c8ff;
   text-decoration: none;
   font-weight: 700;
 }
 
 .detail-card {
-  border: 1px solid #dbe3f0;
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 12px;
-  background: #ffffff;
+  background: #212121;
   padding: 14px;
   display: grid;
   gap: 12px;
@@ -35,17 +36,42 @@ header a {
 
 .cancel-btn {
   width: fit-content;
-  border: 0;
-  border-radius: 10px;
+  border: 1px solid rgba(255, 127, 127, 0.5);
+  border-radius: 8px;
   padding: 10px 14px;
   font: inherit;
   font-weight: 700;
-  color: #ffffff;
-  background: #b42318;
+  color: #ff9b9b;
+  background: transparent;
   cursor: pointer;
 }
 
+.cancel-btn:hover {
+  background: rgba(255, 127, 127, 0.12);
+}
+
 .cancel-btn:disabled {
+  opacity: 0.65;
+}
+
+.payos-btn {
+  width: fit-content;
+  border: 1px solid #00c8ff;
+  border-radius: 8px;
+  padding: 10px 14px;
+  font: inherit;
+  font-weight: 700;
+  color: #00c8ff;
+  background: transparent;
+  cursor: pointer;
+}
+
+.payos-btn:hover {
+  background: #00c8ff;
+  color: #141414;
+}
+
+.payos-btn:disabled {
   opacity: 0.65;
 }
 
@@ -61,7 +87,7 @@ li {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border: 1px solid #edf2f7;
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 10px;
   padding: 10px;
 }
@@ -72,15 +98,15 @@ li p {
 }
 
 li small {
-  color: #5f6d84;
+  color: #a3a3a3;
 }
 
 .error-box {
   margin: 0;
-  color: #b42318;
+  color: #ff8b8b;
 }
 
 .success-box {
   margin: 0;
-  color: #067647;
+  color: #6be3bd;
 }

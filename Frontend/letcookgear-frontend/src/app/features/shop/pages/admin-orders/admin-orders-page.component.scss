@@ -2,6 +2,7 @@
   display: grid;
   gap: 14px;
   padding: 22px 14px 30px;
+  color: #ffffff;
 }
 
 header {
@@ -15,10 +16,11 @@ header h1 {
 }
 
 header button {
-  border: 1px solid #c8d3e5;
-  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 8px;
   padding: 8px 12px;
-  background: #ffffff;
+  color: #d0d0d0;
+  background: #2f3338;
   cursor: pointer;
 }
 
@@ -28,9 +30,9 @@ header button {
 }
 
 .order-card {
-  border: 1px solid #dbe3f0;
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 12px;
-  background: #ffffff;
+  background: #212121;
   padding: 14px;
   display: grid;
   gap: 10px;
@@ -49,7 +51,7 @@ header button {
 
 .order-card p {
   margin: 0;
-  color: #344054;
+  color: #d0d0d0;
 }
 
 label {
@@ -60,8 +62,10 @@ label {
 
 select {
   width: 220px;
-  border: 1px solid #c8d3e5;
-  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 8px;
+  color: #ffffff;
+  background: #2f3338;
   padding: 9px 10px;
   font: inherit;
 }
@@ -81,10 +85,10 @@ li {
 
 .error-box {
   margin: 0;
-  color: #b42318;
+  color: #ff8b8b;
 }
 
 .success-box {
   margin: 0;
-  color: #067647;
+  color: #6be3bd;
 }

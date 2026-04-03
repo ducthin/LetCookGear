@@ -48,4 +48,12 @@ public class OrderController {
         OrderResponse data = orderService.cancelMyOrder(principal.getName(), orderId);
         return ResponseEntity.ok(ApiResponse.success("Hủy đơn hàng thành công", data));
     }
+
+    @PostMapping("/me/{orderId}/payos/retry")
+    public ResponseEntity<ApiResponse<OrderResponse>> retryPayOsCheckout(
+            Principal principal,
+            @PathVariable Long orderId) {
+        OrderResponse data = orderService.retryPayOsCheckout(principal.getName(), orderId);
+        return ResponseEntity.ok(ApiResponse.success("Tạo lại liên kết thanh toán PayOS thành công", data));
+    }
 }

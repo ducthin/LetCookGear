@@ -13,5 +13,14 @@ public class ProductVariantSummaryResponse {
     private String variantName;
     private BigDecimal price;
     private BigDecimal compareAtPrice;
+    private String cpuModel;
+    private Integer ramGb;
+    private Integer storageGb;
+    private String gpuModel;
+    private Integer refreshRateHz;
+    private String panelType;
+    private String connectionType;
+    private String switchType;
+    private BigDecimal sizeInch;
     private ProductStatus status;
 }

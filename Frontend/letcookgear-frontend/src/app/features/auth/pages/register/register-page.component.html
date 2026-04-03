@@ -1,7 +1,15 @@
 <section class="auth-wrapper">
   <article class="auth-card">
-    <h1>Tạo tài khoản</h1>
-    <p>Đăng ký để bắt đầu mua sắm tại LetCookGear.</p>
+    <div class="card-head">
+      <p class="eyebrow">LETCOOKGEAR ACCESS</p>
+      <h1>Tạo tài khoản</h1>
+      <p>Đăng ký nhanh để lưu cấu hình, theo dõi đơn và nhận ưu đãi thành viên.</p>
+    </div>
+
+    <div class="quick-links">
+      <a routerLink="/">Trang chủ</a>
+      <a routerLink="/shop/products">Mua sắm</a>
+    </div>
 
     <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
       <label>
@@ -27,7 +35,12 @@
 
       <label>
         Mật khẩu
-        <input type="password" formControlName="password" placeholder="Tối thiểu 6 ký tự" />
+        <div class="password-row">
+          <input [type]="showPassword() ? 'text' : 'password'" formControlName="password" placeholder="Tối thiểu 6 ký tự" />
+          <button type="button" class="toggle-password" (click)="togglePasswordVisibility()">
+            {{ showPassword() ? 'Ẩn' : 'Hiện' }}
+          </button>
+        </div>
       </label>
       <small class="field-error" *ngIf="form.controls.password.touched && form.controls.password.invalid">
         Mật khẩu phải có ít nhất 6 ký tự.

@@ -1,23 +1,7 @@
-<header class="topbar">
-  <div class="container">
-    <a class="brand" routerLink="/shop/products">LetCookGear</a>
+<app-site-header *ngIf="showShellNav()" brandName="LetCookGear" />
 
-    <nav class="menu">
-      <a routerLink="/shop/products" routerLinkActive="active">Sản phẩm</a>
-      <a routerLink="/shop/cart" routerLinkActive="active" *ngIf="isLoggedIn()">
-        Giỏ hàng ({{ cartTotalItems() }})
-      </a>
-      <a routerLink="/shop/checkout" routerLinkActive="active" *ngIf="isLoggedIn()">Thanh toán</a>
-      <a routerLink="/shop/orders" routerLinkActive="active" *ngIf="isLoggedIn()">Đơn hàng</a>
-      <a routerLink="/shop/admin/orders" routerLinkActive="active" *ngIf="isAdmin()">Quản trị đơn</a>
-      <a routerLink="/auth/me" routerLinkActive="active" *ngIf="isLoggedIn()">Hồ sơ</a>
-      <a routerLink="/auth/login" routerLinkActive="active" *ngIf="!isLoggedIn()">Đăng nhập</a>
-      <a routerLink="/auth/register" routerLinkActive="active" *ngIf="!isLoggedIn()">Đăng ký</a>
-      <button type="button" (click)="logout()" *ngIf="isLoggedIn()">Đăng xuất</button>
-    </nav>
-  </div>
-</header>
-
-<main class="page-content">
+<main [class.page-content]="showShellNav()">
   <router-outlet />
 </main>
+
+<app-site-footer *ngIf="showShellNav()" />

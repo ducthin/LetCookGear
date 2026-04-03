@@ -1,0 +1,206 @@
+<header class="site-header">
+  <div class="header-inner">
+    <a class="logo" routerLink="/">{{ brandName }}</a>
+
+    <form class="search-shell" (ngSubmit)="submitSearch()">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M10.5 3a7.5 7.5 0 0 1 5.93 12.09l4.24 4.24-1.42 1.42-4.24-4.24A7.5 7.5 0 1 1 10.5 3Zm0 2a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11Z" />
+      </svg>
+      <input
+        type="text"
+        [ngModel]="searchKeyword()"
+        (ngModelChange)="searchKeyword.set($event)"
+        name="headerSearch"
+        placeholder="Tìm chuột, bàn phím, tai nghe..."
+      />
+    </form>
+
+    <div class="header-actions">
+      <div class="cart-menu" (click)="$event.stopPropagation()">
+        <button
+          type="button"
+          class="cart-trigger"
+          [attr.aria-label]="cartTotalItems() > 0 ? 'Giỏ hàng, ' + cartTotalItems() + ' sản phẩm' : 'Giỏ hàng'"
+          (click)="openCart()"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M7 4h-2v2h1l1.6 8.1A2 2 0 0 0 9.56 16h8.88a2 2 0 0 0 1.96-1.58L22 8H8.25L7.8 6H20V4H7Zm3 16a2 2 0 1 1 0-4 2 2 0 0 1 0 4Zm8 0a2 2 0 1 1 0-4 2 2 0 0 1 0 4Z" />
+          </svg>
+          <span class="cart-count" *ngIf="cartTotalItems() > 0">{{ cartCountLabel() }}</span>
+        </button>
+
+        <div class="cart-dropdown" *ngIf="cartPopupOpen()">
+          <ng-container *ngIf="cartData() as cart; else cartLoadingTpl">
+            <p class="cart-title">Giỏ hàng của bạn</p>
+            <p class="cart-subtitle" *ngIf="cart.totalItems > 0">{{ cart.totalItems }} sản phẩm</p>
+            <p class="cart-empty" *ngIf="cart.totalItems === 0">Giỏ hàng của bạn đang trống.</p>
+
+            <ul class="cart-items" *ngIf="cart.items.length > 0">
+              <li *ngFor="let item of cart.items; trackBy: trackByCartItemId">
+                <img class="cart-item-image" [src]="resolveCartItemImage(item)" [alt]="item.productName" loading="lazy" />
+
+                <div class="cart-item-main">
+                  <p>{{ item.productName }}</p>
+                  <small>{{ item.variantName }}</small>
+
+                  <div class="cart-line-meta">
+                    <span>{{ item.unitPrice | number: '1.0-0' }} VND</span>
+                    <strong>{{ item.lineTotal | number: '1.0-0' }} VND</strong>
+                  </div>
+
+                  <div class="cart-line-actions">
+                    <div class="qty-control">
+                      <button
+                        type="button"
+                        [disabled]="isItemActionPending(item.itemId)"
+                        (click)="decreaseItemQuantity(item)"
+                      >
+                        -
+                      </button>
+                      <input
+                        type="number"
+                        min="1"
+                        [value]="item.quantity"
+                        [disabled]="isItemActionPending(item.itemId)"
+                        (click)="$event.stopPropagation()"
+                        (change)="onQuantityInputChange(item, $any($event.target).value)"
+                      />
+                      <button
+                        type="button"
+                        [disabled]="isItemActionPending(item.itemId)"
+                        (click)="increaseItemQuantity(item)"
+                      >
+                        +
+                      </button>
+                    </div>
+
+                    <button
+                      type="button"
+                      class="remove-item"
+                      [disabled]="isItemActionPending(item.itemId)"
+                      (click)="removeCartItem(item.itemId)"
+                    >
+                      Xóa
+                    </button>
+                  </div>
+                </div>
+              </li>
+            </ul>
+
+            <div class="cart-summary" *ngIf="cart.totalItems > 0">
+              <span>Tạm tính</span>
+              <strong>{{ cart.subtotal | number: '1.0-0' }} VND</strong>
+            </div>
+
+            <div class="cart-actions">
+              <button type="button" class="ghost" (click)="goToCart()">Xem giỏ hàng</button>
+              <button type="button" class="primary" [disabled]="cart.totalItems === 0" (click)="goToCheckout()">Thanh toán</button>
+            </div>
+          </ng-container>
+
+          <ng-template #cartLoadingTpl>
+            <p class="cart-empty">Đang tải giỏ hàng...</p>
+            <div class="cart-actions">
+              <button type="button" class="ghost" (click)="goToCart()">Mở giỏ hàng</button>
+            </div>
+          </ng-template>
+        </div>
+      </div>
+
+      <div class="account-menu" (click)="$event.stopPropagation()">
+        <button type="button" aria-label="Tài khoản" (click)="toggleAccountMenu()">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5Zm0 2c-4.42 0-8 2.24-8 5v1h16v-1c0-2.76-3.58-5-8-5Z" />
+          </svg>
+        </button>
+
+        <div class="account-dropdown" *ngIf="accountMenuOpen()">
+          <ng-container *ngIf="isLoggedIn(); else guestLinks">
+            <div class="account-user">
+              <p>{{ currentUser()?.fullName || 'LetCookGear Member' }}</p>
+              <span>{{ currentUser()?.email }}</span>
+            </div>
+            <a routerLink="/auth/me" (click)="closeAccountMenu()">Hồ sơ</a>
+            <a routerLink="/shop/orders" (click)="closeAccountMenu()">Đơn hàng</a>
+            <button type="button" class="logout-action" (click)="logout()">Đăng xuất</button>
+          </ng-container>
+
+          <ng-template #guestLinks>
+            <a routerLink="/auth/login" (click)="closeAccountMenu()">Đăng nhập</a>
+            <a routerLink="/auth/register" (click)="closeAccountMenu()">Đăng ký</a>
+          </ng-template>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="payment-toast" *ngIf="paymentToast() as toast">{{ toast }}</div>
+
+  <div class="mega-wrap" (mouseleave)="closeMega()">
+    <nav class="mega-nav">
+      <ng-container *ngFor="let section of megaSections">
+        <button
+          *ngIf="hasMega(section); else quickLink"
+          type="button"
+          class="mega-tab"
+          [class.active]="activeMegaSection() === section.id"
+          (mouseenter)="openMega(section.id)"
+          (click)="openMega(section.id)"
+        >
+          <span class="mega-icon" [ngSwitch]="section.icon" aria-hidden="true">
+            <svg *ngSwitchCase="'laptop'" viewBox="0 0 24 24"><path d="M4 6h16v10H4zM2 18h20" /></svg>
+            <svg *ngSwitchCase="'console'" viewBox="0 0 24 24"><path d="M5 8h14v8H5zM8 12h2m4 0h2" /></svg>
+            <svg *ngSwitchCase="'pc'" viewBox="0 0 24 24"><path d="M3 5h11v8H3zM16 8h5v11h-5zM7 18h3" /></svg>
+            <svg *ngSwitchCase="'monitor'" viewBox="0 0 24 24"><path d="M3 5h18v11H3zM9 19h6" /></svg>
+            <svg *ngSwitchCase="'chip'" viewBox="0 0 24 24"><path d="M8 8h8v8H8zM12 3v3m0 12v3M3 12h3m12 0h3" /></svg>
+            <svg *ngSwitchCase="'keyboard'" viewBox="0 0 24 24"><path d="M3 8h18v8H3zM6 11h1m2 0h1m2 0h1m2 0h1" /></svg>
+            <svg *ngSwitchCase="'setting'" viewBox="0 0 24 24"><path d="M12 8a4 4 0 1 1 0 8 4 4 0 0 1 0-8zm0-5v2m0 14v2M4 12H2m20 0h-2M5.6 5.6 4.2 4.2m15.6 15.6-1.4-1.4M18.4 5.6l1.4-1.4M4.2 19.8l1.4-1.4" /></svg>
+            <svg *ngSwitchCase="'grid'" viewBox="0 0 24 24"><path d="M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z" /></svg>
+            <svg *ngSwitchCase="'tablet'" viewBox="0 0 24 24"><path d="M7 3h10v18H7zM11.5 18h1" /></svg>
+            <svg *ngSwitchCase="'service'" viewBox="0 0 24 24"><path d="M4 12a8 8 0 0 1 14-5m2-1v5h-5M20 12a8 8 0 0 1-14 5m-2 1v-5h5" /></svg>
+            <svg *ngSwitchDefault viewBox="0 0 24 24"><path d="M4 12h16" /></svg>
+          </span>
+          <span>{{ section.label }}</span>
+        </button>
+
+        <ng-template #quickLink>
+          <a class="mega-tab" [class.active]="activeMegaSection() === section.id" [routerLink]="section.link" (mouseenter)="closeMega()">
+            <span class="mega-icon" [ngSwitch]="section.icon" aria-hidden="true">
+              <svg *ngSwitchCase="'laptop'" viewBox="0 0 24 24"><path d="M4 6h16v10H4zM2 18h20" /></svg>
+              <svg *ngSwitchCase="'console'" viewBox="0 0 24 24"><path d="M5 8h14v8H5zM8 12h2m4 0h2" /></svg>
+              <svg *ngSwitchCase="'pc'" viewBox="0 0 24 24"><path d="M3 5h11v8H3zM16 8h5v11h-5zM7 18h3" /></svg>
+              <svg *ngSwitchCase="'monitor'" viewBox="0 0 24 24"><path d="M3 5h18v11H3zM9 19h6" /></svg>
+              <svg *ngSwitchCase="'chip'" viewBox="0 0 24 24"><path d="M8 8h8v8H8zM12 3v3m0 12v3M3 12h3m12 0h3" /></svg>
+              <svg *ngSwitchCase="'keyboard'" viewBox="0 0 24 24"><path d="M3 8h18v8H3zM6 11h1m2 0h1m2 0h1m2 0h1" /></svg>
+              <svg *ngSwitchCase="'setting'" viewBox="0 0 24 24"><path d="M12 8a4 4 0 1 1 0 8 4 4 0 0 1 0-8zm0-5v2m0 14v2M4 12H2m20 0h-2M5.6 5.6 4.2 4.2m15.6 15.6-1.4-1.4M18.4 5.6l1.4-1.4M4.2 19.8l1.4-1.4" /></svg>
+              <svg *ngSwitchCase="'grid'" viewBox="0 0 24 24"><path d="M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z" /></svg>
+              <svg *ngSwitchCase="'tablet'" viewBox="0 0 24 24"><path d="M7 3h10v18H7zM11.5 18h1" /></svg>
+              <svg *ngSwitchCase="'service'" viewBox="0 0 24 24"><path d="M4 12a8 8 0 0 1 14-5m2-1v5h-5M20 12a8 8 0 0 1-14 5m-2 1v-5h5" /></svg>
+              <svg *ngSwitchDefault viewBox="0 0 24 24"><path d="M4 12h16" /></svg>
+            </span>
+            <span>{{ section.label }}</span>
+          </a>
+        </ng-template>
+      </ng-container>
+    </nav>
+
+    <section class="mega-panel" *ngIf="activeMegaSection()">
+      <div class="mega-panel-head" *ngIf="getActiveMegaSection() as activeSection">
+        <div>
+          <h3>{{ activeSection.label }}</h3>
+          <p>Khám phá nhanh nhóm sản phẩm phù hợp nhu cầu của bạn.</p>
+        </div>
+        <a class="view-all" [routerLink]="activeSection.link" (click)="closeMega()">Xem tất cả</a>
+      </div>
+
+      <div class="mega-quick" *ngIf="getActiveMegaSection()?.quickLinks?.length">
+        <a *ngFor="let quick of getActiveMegaSection()?.quickLinks" routerLink="/shop/products" (click)="closeMega()">{{ quick }}</a>
+      </div>
+
+      <article class="mega-column" *ngFor="let column of getActiveMegaColumns()">
+        <h4>{{ column.title }}</h4>
+        <a *ngFor="let item of column.items" routerLink="/shop/products" (click)="closeMega()">{{ item }}</a>
+      </article>
+    </section>
+  </div>
+</header>

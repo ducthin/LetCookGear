@@ -17,6 +17,8 @@ import com.ducthin.LetCookGear.entity.enums.OrderStatus;
 import com.ducthin.LetCookGear.entity.enums.PaymentMethod;
 import com.ducthin.LetCookGear.entity.enums.PaymentStatus;
 import com.ducthin.LetCookGear.entity.enums.ShipmentStatus;
+import com.ducthin.LetCookGear.payment.PayOsCheckoutService;
+import com.ducthin.LetCookGear.realtime.RealtimeEventPublisher;
 import com.ducthin.LetCookGear.repository.AddressRepository;
 import com.ducthin.LetCookGear.repository.CustomerOrderRepository;
 import com.ducthin.LetCookGear.repository.InventoryRepository;
@@ -46,6 +48,8 @@ public class OrderService {
     private final AddressRepository addressRepository;
     private final InventoryRepository inventoryRepository;
     private final CartService cartService;
+    private final PayOsCheckoutService payOsCheckoutService;
+    private final RealtimeEventPublisher realtimeEventPublisher;
 
     @Transactional
     public OrderResponse checkout(String email, CheckoutRequest request) {
@@ -105,6 +109,15 @@ public class OrderService {
         payment.setMethod(request.getPaymentMethod());
         payment.setAmount(savedOrder.getFinalAmount());
         payment.setStatus(resolvePaymentStatus(request.getPaymentMethod()));
+
+        String checkoutUrl = null;
+        if (request.getPaymentMethod() == PaymentMethod.PAYOS) {
+            PayOsCheckoutService.PayOsCheckoutResult payOsCheckout =
+                payOsCheckoutService.createCheckoutLink(savedOrder, orderItems, user, request);
+            payment.setTransactionRef(payOsCheckout.paymentLinkId());
+            checkoutUrl = payOsCheckout.checkoutUrl();
+        }
+
         paymentRepository.save(payment);
 
         Shipment shipment = new Shipment();
@@ -124,8 +137,9 @@ public class OrderService {
         addressRepository.save(address);
 
         cart.setStatus(CartStatus.CHECKED_OUT);
+        realtimeEventPublisher.publishCartUpdated(user.getEmail(), 0);
 
-        return toOrderResponse(savedOrder, orderItems, request.getPaymentMethod());
+        return toOrderResponse(savedOrder, orderItems, request.getPaymentMethod(), checkoutUrl);
     }
 
     @Transactional(readOnly = true)
@@ -137,7 +151,7 @@ public class OrderService {
                             .findTopByOrderIdOrderByCreatedAtAsc(order.getId())
                             .map(Payment::getMethod)
                             .orElse(PaymentMethod.COD);
-                    return toOrderResponse(order, order.getItems(), paymentMethod);
+                        return toOrderResponse(order, order.getItems(), paymentMethod, null);
                 })
                 .toList();
     }
@@ -154,7 +168,7 @@ public class OrderService {
                 .map(Payment::getMethod)
                 .orElse(PaymentMethod.COD);
 
-        return toOrderResponse(order, order.getItems(), paymentMethod);
+        return toOrderResponse(order, order.getItems(), paymentMethod, null);
     }
 
     @Transactional
@@ -181,7 +195,60 @@ public class OrderService {
                 .map(Payment::getMethod)
                 .orElse(PaymentMethod.COD);
 
-        return toOrderResponse(order, order.getItems(), paymentMethod);
+        return toOrderResponse(order, order.getItems(), paymentMethod, null);
+    }
+
+    @Transactional
+    public OrderResponse retryPayOsCheckout(String email, Long orderId) {
+    User user = getUserByEmail(email);
+    CustomerOrder order = customerOrderRepository
+        .findByIdAndUserIdWithItems(orderId, user.getId())
+        .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy đơn hàng"));
+
+    Payment payment = paymentRepository
+        .findTopByOrderIdOrderByCreatedAtDesc(order.getId())
+        .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy bản ghi thanh toán cho đơn hàng"));
+
+    if (payment.getMethod() != PaymentMethod.PAYOS) {
+        throw new IllegalArgumentException("Đơn hàng này không sử dụng phương thức thanh toán PayOS");
+    }
+
+    if (order.getPaymentStatus() == PaymentStatus.PAID) {
+        throw new IllegalArgumentException("Đơn hàng đã được thanh toán thành công");
+    }
+
+    Address latestAddress = addressRepository.findTopByUserIdOrderByCreatedAtDesc(user.getId()).orElse(null);
+
+    String buyerName = latestAddress != null
+        ? latestAddress.getReceiverName()
+        : user.getFullName();
+
+    String buyerPhone = latestAddress != null
+        ? latestAddress.getPhone()
+        : user.getPhone();
+
+    String buyerAddress = latestAddress != null
+        ? String.join(
+            ", ",
+            latestAddress.getDetail(),
+            latestAddress.getWard(),
+            latestAddress.getDistrict(),
+            latestAddress.getProvince())
+        : "";
+
+    PayOsCheckoutService.PayOsCheckoutResult payOsCheckout = payOsCheckoutService.createCheckoutLink(
+        order,
+        order.getItems(),
+        buyerName,
+        user.getEmail(),
+        buyerPhone,
+        buyerAddress);
+
+    payment.setTransactionRef(payOsCheckout.paymentLinkId());
+    payment.setStatus(PaymentStatus.PENDING);
+    order.setPaymentStatus(PaymentStatus.PENDING);
+
+    return toOrderResponse(order, order.getItems(), payment.getMethod(), payOsCheckout.checkoutUrl());
     }
 
     @Transactional(readOnly = true)
@@ -192,7 +259,7 @@ public class OrderService {
                             .findTopByOrderIdOrderByCreatedAtAsc(order.getId())
                             .map(Payment::getMethod)
                             .orElse(PaymentMethod.COD);
-                    return toOrderResponse(order, order.getItems(), paymentMethod);
+                    return toOrderResponse(order, order.getItems(), paymentMethod, null);
                 })
                 .toList();
     }
@@ -208,7 +275,7 @@ public class OrderService {
                 .map(Payment::getMethod)
                 .orElse(PaymentMethod.COD);
 
-        return toOrderResponse(order, order.getItems(), paymentMethod);
+                    return toOrderResponse(order, order.getItems(), paymentMethod, null);
     }
 
     @Transactional
@@ -230,7 +297,7 @@ public class OrderService {
                 .map(Payment::getMethod)
                 .orElse(PaymentMethod.COD);
 
-        return toOrderResponse(order, order.getItems(), paymentMethod);
+        return toOrderResponse(order, order.getItems(), paymentMethod, null);
     }
 
     private User getUserByEmail(String email) {
@@ -320,7 +387,11 @@ public class OrderService {
         return code;
     }
 
-    private OrderResponse toOrderResponse(CustomerOrder order, List<OrderItem> items, PaymentMethod paymentMethod) {
+    private OrderResponse toOrderResponse(
+            CustomerOrder order,
+            List<OrderItem> items,
+            PaymentMethod paymentMethod,
+            String checkoutUrl) {
         List<OrderItemResponse> itemResponses = items.stream()
                 .map(item -> new OrderItemResponse(
                         item.getVariant().getId(),
@@ -334,6 +405,7 @@ public class OrderService {
         return new OrderResponse(
                 order.getId(),
                 order.getOrderCode(),
+                checkoutUrl,
                 order.getStatus(),
                 order.getPaymentStatus(),
                 paymentMethod,

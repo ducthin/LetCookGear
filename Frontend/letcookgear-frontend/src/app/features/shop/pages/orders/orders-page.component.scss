@@ -2,6 +2,7 @@
   display: grid;
   gap: 14px;
   padding: 22px 14px 30px;
+  color: #ffffff;
 }
 
 header {
@@ -16,7 +17,7 @@ header h1 {
 }
 
 header a {
-  color: #155eef;
+  color: #00c8ff;
   text-decoration: none;
   font-weight: 700;
 }
@@ -26,10 +27,52 @@ header a {
   gap: 12px;
 }
 
-.order-card {
-  border: 1px solid #dbe3f0;
+.payos-notice {
+  border: 1px solid rgba(255, 255, 255, 0.16);
   border-radius: 12px;
-  background: #ffffff;
+  background: rgba(47, 51, 56, 0.55);
+  padding: 12px 14px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.payos-notice p {
+  margin: 0;
+}
+
+.payos-notice a {
+  color: #00c8ff;
+  text-decoration: none;
+  font-weight: 700;
+}
+
+.payos-notice.success {
+  border-color: rgba(107, 227, 189, 0.45);
+  color: #6be3bd;
+}
+
+.payos-notice.warning {
+  border-color: rgba(255, 196, 94, 0.45);
+  color: #ffc45e;
+}
+
+.payos-notice.error {
+  border-color: rgba(255, 139, 139, 0.45);
+  color: #ff8b8b;
+}
+
+.payos-notice.info {
+  border-color: rgba(0, 200, 255, 0.45);
+  color: #7bdfff;
+}
+
+.order-card {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  background: #212121;
   padding: 14px;
   display: grid;
   gap: 8px;
@@ -47,12 +90,12 @@ header a {
 
 .order-card p {
   margin: 0;
-  color: #344054;
+  color: #d0d0d0;
 }
 
 .detail-link {
   width: fit-content;
-  color: #155eef;
+  color: #00c8ff;
   text-decoration: none;
   font-weight: 700;
 }
@@ -72,9 +115,9 @@ li {
 
 .error-box {
   margin: 0;
-  color: #b42318;
+  color: #ff8b8b;
 }
 
 .empty {
-  color: #5f6d84;
+  color: #a3a3a3;
 }

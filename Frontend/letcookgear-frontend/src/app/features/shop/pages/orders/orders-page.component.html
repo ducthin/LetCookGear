@@ -4,6 +4,18 @@
     <a routerLink="/shop/products">Tiếp tục mua sắm</a>
   </header>
 
+  <section
+    class="payos-notice"
+    *ngIf="payOsNotice() as notice"
+    [class.success]="notice.kind === 'success'"
+    [class.warning]="notice.kind === 'warning'"
+    [class.error]="notice.kind === 'error'"
+    [class.info]="notice.kind === 'info'"
+  >
+    <p>{{ notice.message }}</p>
+    <a *ngIf="notice.orderId !== null" [routerLink]="['/shop/orders', notice.orderId]">Xem chi tiết đơn hàng</a>
+  </section>
+
   <p class="error-box" *ngIf="error()">{{ error() }}</p>
   <p *ngIf="loading()">Đang tải đơn hàng...</p>
 

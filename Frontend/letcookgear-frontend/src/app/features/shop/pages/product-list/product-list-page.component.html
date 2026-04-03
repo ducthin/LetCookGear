@@ -1,66 +1,142 @@
 <section class="catalog-page">
-  <header class="catalog-header">
-    <div>
-      <h1>Danh mục sản phẩm</h1>
-      <p>Khám phá sản phẩm và thêm vào giỏ hàng của bạn.</p>
-    </div>
-    <button type="button" (click)="reload()" [disabled]="loading()">Tải lại</button>
-  </header>
+  <div class="breadcrumb">Trang chủ / Danh mục / {{ selectedCategoryId() ? 'Sản phẩm theo danh mục' : 'Tất cả sản phẩm' }}</div>
 
-  <section class="filters">
-    <label>
-      Tìm kiếm
-      <input type="text" [value]="searchTerm()" (input)="onSearchInput($any($event.target).value)" placeholder="Tìm theo tên, slug..." />
-    </label>
+  <div class="catalog-shell">
+    <aside class="filter-sidebar">
+      <div class="sidebar-head">
+        <h2>Bộ lọc</h2>
+        <button type="button" (click)="clearFilters()">Làm mới</button>
+      </div>
 
-    <label>
-      Danh mục
-      <select (change)="onCategoryChange($any($event.target).value)">
-        <option value="">Tất cả danh mục</option>
-        <option *ngFor="let category of categories()" [value]="category.id">{{ category.name }}</option>
-      </select>
-    </label>
+      <label class="search-input">
+        <span>Tìm kiếm</span>
+        <input type="text" [value]="searchTerm()" (input)="onSearchInput($any($event.target).value)" placeholder="Tên sản phẩm, mã, mô tả..." />
+      </label>
 
-    <label>
-      Thương hiệu
-      <select (change)="onBrandChange($any($event.target).value)">
-        <option value="">Tất cả thương hiệu</option>
-        <option *ngFor="let brand of brands()" [value]="brand.id">{{ brand.name }}</option>
-      </select>
-    </label>
-  </section>
+      <section class="filter-group">
+        <h3>Danh mục</h3>
+        <label class="filter-check">
+          <input type="checkbox" [checked]="selectedCategoryId() === null" (change)="setCategory(null)" />
+          <span>Tất cả</span>
+        </label>
+        <label class="filter-check" *ngFor="let category of categories()">
+          <input
+            type="checkbox"
+            [checked]="selectedCategoryId() === category.id"
+            (change)="setCategory(selectedCategoryId() === category.id ? null : category.id)"
+          />
+          <span>{{ category.name }}</span>
+        </label>
+      </section>
 
-  <p class="error-box" *ngIf="error()">{{ error() }}</p>
+      <section class="filter-group">
+        <h3>Thương hiệu</h3>
+        <label class="filter-check">
+          <input type="checkbox" [checked]="!selectedBrandIds().length" (change)="clearSelectedBrands()" />
+          <span>Tất cả</span>
+        </label>
+        <label class="filter-check" *ngFor="let brand of visibleBrands()">
+          <input
+            type="checkbox"
+            [checked]="selectedBrandIds().includes(brand.id)"
+            (change)="toggleBrand(brand.id, $any($event.target).checked)"
+          />
+          <span>{{ brand.name }} ({{ brand.productCount }})</span>
+        </label>
+      </section>
 
-  <p class="hint" *ngIf="loading()">Đang tải sản phẩm...</p>
-  <p class="hint" *ngIf="!loading() && !filteredProducts().length">Không tìm thấy sản phẩm phù hợp bộ lọc.</p>
+      <section class="filter-group">
+        <h3>Mức giá</h3>
+        <label class="filter-check" *ngFor="let bucket of priceBuckets">
+          <input
+            type="checkbox"
+            [checked]="selectedPriceBucket() === bucket.id"
+            (change)="setPriceBucket(bucket.id)"
+          />
+          <span>{{ bucket.label }}</span>
+        </label>
+      </section>
 
-  <section class="grid" *ngIf="filteredProducts().length">
-    <article class="product-card" *ngFor="let product of filteredProducts()">
-      <h2>
-        <a [routerLink]="['/shop/products', product.slug]">{{ product.name }}</a>
-      </h2>
-      <p class="meta">{{ product.categoryName }} • {{ product.brandName }}</p>
-      <p class="desc">{{ product.shortDescription || 'Chưa có mô tả ngắn.' }}</p>
+      <section class="filter-group" *ngFor="let group of contextualFilterGroups()">
+        <h3>{{ group.title }}</h3>
+        <label class="filter-check" *ngFor="let option of group.options">
+          <input
+            type="checkbox"
+            [checked]="isContextFilterSelected(group.key, option.valueKey)"
+            (change)="toggleContextFilter(group.key, option.valueKey, $any($event.target).checked)"
+          />
+          <span>{{ option.label }} ({{ option.count }})</span>
+        </label>
+      </section>
+    </aside>
 
-      <p class="price" *ngIf="product.variants.length; else noVariantTpl">
-        {{ product.variants[0].price | number: '1.0-0' }} VND
-      </p>
-      <ng-template #noVariantTpl>
-        <p class="price muted">Chưa có phiên bản sẵn sàng bán</p>
-      </ng-template>
+    <section class="catalog-content">
+      <header class="catalog-header">
+        <h1>Danh mục sản phẩm</h1>
+        <p>{{ sortedProducts().length }} sản phẩm</p>
+      </header>
 
-      <div class="actions">
-        <a class="btn ghost" [routerLink]="['/shop/products', product.slug]">Xem</a>
-        <button
-          type="button"
-          class="btn"
-          (click)="addToCart(product)"
-          [disabled]="!product.variants.length || addingProductId() === product.id"
-        >
-          {{ addingProductId() === product.id ? 'Đang thêm...' : 'Thêm vào giỏ' }}
+      <section class="promo-banner" aria-hidden="true">
+        <img
+          class="promo-image"
+          src="https://images.unsplash.com/photo-1603302576837-37561b2e2302?auto=format&fit=crop&w=1600&q=80"
+          alt="Laptop gaming"
+          loading="lazy"
+        />
+        <div class="promo-overlay">
+          <p>LAPTOP GAMING</p>
+          <span>Gia chi tu 15.990.000d</span>
+        </div>
+      </section>
+
+      <div class="top-tags" *ngIf="topTags().length">
+        <button type="button" *ngFor="let tag of topTags()">
+          <span class="tag-icon" aria-hidden="true"></span>
+          <span>{{ tag }}</span>
         </button>
       </div>
-    </article>
-  </section>
+
+      <div class="sort-chips">
+        <button
+          type="button"
+          *ngFor="let chip of sortChips"
+          [class.active]="selectedSort() === chip.id"
+          (click)="setSort(chip.id)"
+        >
+          {{ chip.label }}
+        </button>
+      </div>
+
+      <p class="error-box" *ngIf="error()">{{ error() }}</p>
+      <p class="hint" *ngIf="loading()">Đang tải sản phẩm...</p>
+      <p class="hint" *ngIf="!loading() && !sortedProducts().length">Không tìm thấy sản phẩm phù hợp bộ lọc.</p>
+
+      <section class="grid" *ngIf="sortedProducts().length">
+        <article class="product-card" *ngFor="let product of sortedProducts(); let index = index">
+          <a class="thumb" [routerLink]="['/shop/products', product.slug]">
+            <img [src]="getProductImage(index)" [alt]="product.name" loading="lazy" />
+          </a>
+
+          <div class="card-body">
+            <h2>
+              <a [routerLink]="['/shop/products', product.slug]">{{ product.name }}</a>
+            </h2>
+
+            <p class="price" *ngIf="product.variants.length; else noVariantTpl">
+              {{ formatProductPrice(getPrimaryPrice(product)) }}
+            </p>
+            <ng-template #noVariantTpl>
+              <p class="price muted">Chưa có phiên bản sẵn sàng bán</p>
+            </ng-template>
+
+            <div class="spec-list" *ngIf="getQuickSpecs(product).length">
+              <span *ngFor="let spec of getQuickSpecs(product)">{{ spec }}</span>
+            </div>
+
+            <a class="detail-link" [routerLink]="['/shop/products', product.slug]">CHI TIẾT</a>
+          </div>
+        </article>
+      </section>
+    </section>
+  </div>
 </section>

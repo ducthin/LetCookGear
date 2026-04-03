@@ -22,11 +22,16 @@ export class LoginPageComponent {
 
   readonly loading = signal(false);
   readonly error = signal<string | null>(null);
+  readonly showPassword = signal(false);
 
   readonly form = this.fb.nonNullable.group({
     email: ['', [Validators.required, Validators.email]],
     password: ['', [Validators.required, Validators.minLength(6)]],
   });
+
+  togglePasswordVisibility(): void {
+    this.showPassword.update((value) => !value);
+  }
 
   submit(): void {
     this.error.set(null);
@@ -41,7 +46,7 @@ export class LoginPageComponent {
         this.cartService.loadMyCart().subscribe({
           error: () => this.cartService.clearLocalCart(),
         });
-        const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl') ?? '/shop/products';
+        const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl') ?? '/';
         this.router.navigateByUrl(returnUrl);
       },
       error: (err: unknown) => {

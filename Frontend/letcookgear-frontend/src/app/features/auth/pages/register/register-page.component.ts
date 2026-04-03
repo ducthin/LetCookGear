@@ -21,6 +21,7 @@ export class RegisterPageComponent {
 
   readonly loading = signal(false);
   readonly error = signal<string | null>(null);
+  readonly showPassword = signal(false);
 
   readonly form = this.fb.nonNullable.group({
     fullName: ['', [Validators.required, Validators.minLength(3)]],
@@ -28,6 +29,10 @@ export class RegisterPageComponent {
     phone: [''],
     password: ['', [Validators.required, Validators.minLength(6)]],
   });
+
+  togglePasswordVisibility(): void {
+    this.showPassword.update((value) => !value);
+  }
 
   submit(): void {
     this.error.set(null);
@@ -42,7 +47,7 @@ export class RegisterPageComponent {
         this.cartService.loadMyCart().subscribe({
           error: () => this.cartService.clearLocalCart(),
         });
-        this.router.navigateByUrl('/shop/products');
+        this.router.navigateByUrl('/');
       },
       error: (err: unknown) => {
         const message =

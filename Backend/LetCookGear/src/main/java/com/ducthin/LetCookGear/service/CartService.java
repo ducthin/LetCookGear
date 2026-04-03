@@ -8,6 +8,7 @@ import com.ducthin.LetCookGear.entity.Inventory;
 import com.ducthin.LetCookGear.entity.ProductVariant;
 import com.ducthin.LetCookGear.entity.User;
 import com.ducthin.LetCookGear.entity.enums.CartStatus;
+import com.ducthin.LetCookGear.realtime.RealtimeEventPublisher;
 import com.ducthin.LetCookGear.repository.CartItemRepository;
 import com.ducthin.LetCookGear.repository.CartRepository;
 import com.ducthin.LetCookGear.repository.InventoryRepository;
@@ -15,10 +16,12 @@ import com.ducthin.LetCookGear.repository.ProductVariantRepository;
 import com.ducthin.LetCookGear.repository.UserRepository;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 @Service
 @RequiredArgsConstructor
@@ -29,6 +32,7 @@ public class CartService {
     private final ProductVariantRepository productVariantRepository;
     private final InventoryRepository inventoryRepository;
     private final UserRepository userRepository;
+    private final RealtimeEventPublisher realtimeEventPublisher;
 
     @Transactional
     public CartResponse getMyCart(String email) {
@@ -65,7 +69,9 @@ public class CartService {
         item.setUnitPrice(variant.getPrice());
         cartItemRepository.save(item);
 
-        return toCartResponse(getActiveCartOrThrow(user.getId()));
+        CartResponse response = toCartResponse(getActiveCartOrThrow(user.getId()));
+        publishCartUpdate(user.getEmail(), response);
+        return response;
     }
 
     @Transactional
@@ -88,7 +94,9 @@ public class CartService {
             cartItemRepository.save(item);
         }
 
-        return toCartResponse(getOrCreateActiveCart(user));
+        CartResponse response = toCartResponse(getOrCreateActiveCart(user));
+        publishCartUpdate(user.getEmail(), response);
+        return response;
     }
 
     @Transactional
@@ -99,7 +107,9 @@ public class CartService {
             .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy sản phẩm trong giỏ hàng"));
         cartItemRepository.delete(item);
 
-        return toCartResponse(getOrCreateActiveCart(user));
+        CartResponse response = toCartResponse(getOrCreateActiveCart(user));
+        publishCartUpdate(user.getEmail(), response);
+        return response;
     }
 
     @Transactional
@@ -108,7 +118,9 @@ public class CartService {
         Cart cart = getOrCreateActiveCart(user);
         List<CartItem> existingItems = new ArrayList<>(cart.getItems());
         cartItemRepository.deleteAll(existingItems);
-        return toCartResponse(getActiveCartOrThrow(user.getId()));
+        CartResponse response = toCartResponse(getActiveCartOrThrow(user.getId()));
+        publishCartUpdate(user.getEmail(), response);
+        return response;
     }
 
     @Transactional(readOnly = true)
@@ -164,8 +176,27 @@ public class CartService {
                 item.getVariant().getProduct().getId(),
                 item.getVariant().getProduct().getName(),
                 item.getVariant().getProduct().getSlug(),
+                resolveImageUrl(item),
                 item.getUnitPrice(),
                 item.getQuantity(),
                 lineTotal);
+    }
+
+    private void publishCartUpdate(String email, CartResponse cartResponse) {
+        realtimeEventPublisher.publishCartUpdated(email, cartResponse.getTotalItems());
+    }
+
+    private String resolveImageUrl(CartItem item) {
+        String fallbackUrl = "https://picsum.photos/seed/lcg-" + item.getVariant().getProduct().getSlug() + "/120/120";
+
+        return item.getVariant().getProduct().getImages().stream()
+                .filter(image -> image.getVariant() == null || image.getVariant().getId().equals(item.getVariant().getId()))
+                .sorted(Comparator.comparing((com.ducthin.LetCookGear.entity.ProductImage image) -> image.isPrimary())
+                        .reversed()
+                        .thenComparingInt(com.ducthin.LetCookGear.entity.ProductImage::getSortOrder))
+                .map(com.ducthin.LetCookGear.entity.ProductImage::getImageUrl)
+                .filter(StringUtils::hasText)
+                .findFirst()
+                .orElse(fallbackUrl);
     }
 }

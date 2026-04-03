@@ -27,6 +27,16 @@
       {{ cancelling() ? 'Đang hủy đơn...' : 'Hủy đơn hàng' }}
     </button>
 
+    <button
+      type="button"
+      class="payos-btn"
+      *ngIf="canRetryPayOs(o)"
+      [disabled]="retryingPayOs()"
+      (click)="retryPayOsPayment(o.orderId)"
+    >
+      {{ retryingPayOs() ? 'Đang tạo link PayOS...' : 'Thanh toán lại qua PayOS' }}
+    </button>
+
     <h2>Sản phẩm</h2>
     <ul>
       <li *ngFor="let item of o.items">

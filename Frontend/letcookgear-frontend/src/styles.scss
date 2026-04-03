@@ -1,1 +1,18 @@
-/* You can add global styles to this file, and also import other style files */
+/* Global reset to avoid browser default white frame around the app. */
+html,
+body {
+	margin: 0;
+	padding: 0;
+	width: 100%;
+	min-height: 100%;
+}
+
+body {
+	background: #141414;
+	overflow-x: hidden;
+}
+
+app-root {
+	display: block;
+	min-height: 100dvh;
+}

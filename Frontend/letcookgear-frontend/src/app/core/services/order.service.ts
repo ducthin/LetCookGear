@@ -50,6 +50,17 @@ export class OrderService {
     );
   }
 
+  retryPayOsCheckout(orderId: number): Observable<Order> {
+    return this.http.post<ApiResponse<Order>>(`/api/orders/me/${orderId}/payos/retry`, {}).pipe(
+      map((res) => {
+        if (!res.data) {
+          throw new Error('Không thể tạo lại liên kết PayOS');
+        }
+        return res.data;
+      }),
+    );
+  }
+
   getAdminOrders(): Observable<Order[]> {
     return this.http.get<ApiResponse<Order[]>>('/api/admin/orders').pipe(
       map((res) => res.data ?? []),

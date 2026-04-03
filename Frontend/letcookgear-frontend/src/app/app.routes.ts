@@ -1,10 +1,10 @@
 import { Routes } from '@angular/router';
+import { HomePageComponent } from './features/home/pages/home-page/home-page.component';
 
 export const routes: Routes = [
 	{
 		path: '',
-		pathMatch: 'full',
-		redirectTo: 'shop/products',
+		component: HomePageComponent,
 	},
 	{
 		path: 'shop',
@@ -16,6 +16,6 @@ export const routes: Routes = [
 	},
 	{
 		path: '**',
-		redirectTo: 'shop/products',
+		redirectTo: '',
 	},
 ];

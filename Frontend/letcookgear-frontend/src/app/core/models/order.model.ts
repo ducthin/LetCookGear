@@ -1,4 +1,4 @@
-export type PaymentMethod = 'COD' | 'BANK_TRANSFER' | 'VNPAY' | 'MOMO';
+export type PaymentMethod = 'COD' | 'BANK_TRANSFER' | 'VNPAY' | 'MOMO' | 'PAYOS';
 
 export interface CheckoutPayload {
   receiverName: string;
@@ -22,6 +22,7 @@ export interface OrderItem {
 export interface Order {
   orderId: number;
   orderCode: string;
+  checkoutUrl?: string | null;
   status: string;
   paymentStatus: string;
   paymentMethod: PaymentMethod;

@@ -2,6 +2,7 @@
   display: grid;
   gap: 14px;
   padding: 22px 14px 30px;
+  color: #ffffff;
 }
 
 header {
@@ -16,7 +17,7 @@ header h1 {
 }
 
 header a {
-  color: #155eef;
+  color: #00c8ff;
   text-decoration: none;
   font-weight: 700;
 }
@@ -32,9 +33,9 @@ header a {
   align-items: center;
   gap: 10px;
   padding: 12px;
-  border: 1px solid #dbe3f0;
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 12px;
-  background: #ffffff;
+  background: #212121;
 }
 
 .item h2 {
@@ -43,13 +44,13 @@ header a {
 }
 
 .item h2 a {
-  color: #102a4d;
+  color: #ffffff;
   text-decoration: none;
 }
 
 .item p {
   margin: 5px 0 0;
-  color: #5f6d84;
+  color: #a3a3a3;
 }
 
 .qty-box {
@@ -59,11 +60,12 @@ header a {
 }
 
 .qty-box button {
-  border: 1px solid #c8d3e5;
+  border: 1px solid rgba(255, 255, 255, 0.16);
   border-radius: 8px;
   width: 28px;
   height: 28px;
-  background: #f8fbff;
+  color: #d0d0d0;
+  background: #2f3338;
   cursor: pointer;
 }
 
@@ -77,9 +79,9 @@ header a {
 
 .summary {
   margin-top: 6px;
-  border: 1px solid #dbe3f0;
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 12px;
-  background: #ffffff;
+  background: #212121;
   padding: 14px;
 }
 
@@ -94,28 +96,34 @@ header a {
 }
 
 .actions button {
-  border: 0;
-  border-radius: 10px;
+  border: 1px solid #00c8ff;
+  border-radius: 8px;
   padding: 10px 14px;
   font: inherit;
   font-weight: 700;
-  color: #ffffff;
-  background: #1570ef;
+  color: #00c8ff;
+  background: transparent;
   cursor: pointer;
 }
 
+.actions button:hover {
+  background: #00c8ff;
+  color: #141414;
+}
+
 .actions .ghost {
-  background: #eff4ff;
-  color: #1f3556;
+  background: #2f3338;
+  color: #d0d0d0;
+  border-color: rgba(255, 255, 255, 0.16);
 }
 
 .error-box {
-  color: #b42318;
+  color: #ff8b8b;
   margin: 0;
 }
 
 .empty {
-  color: #5f6d84;
+  color: #a3a3a3;
 }
 
 @media (max-width: 760px) {

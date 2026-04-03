@@ -7,4 +7,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface PaymentRepository extends JpaRepository<Payment, Long> {
 
     Optional<Payment> findTopByOrderIdOrderByCreatedAtAsc(Long orderId);
+
+    Optional<Payment> findTopByOrderIdOrderByCreatedAtDesc(Long orderId);
+
+    Optional<Payment> findTopByTransactionRefOrderByCreatedAtDesc(String transactionRef);
 }

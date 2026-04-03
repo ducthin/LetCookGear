@@ -1,0 +1,2 @@
+ALTER TABLE payments
+    MODIFY COLUMN method VARCHAR(30) NOT NULL;

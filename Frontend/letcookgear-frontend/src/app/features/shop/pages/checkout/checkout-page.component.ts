@@ -25,6 +25,7 @@ export class CheckoutPageComponent {
     BANK_TRANSFER: 'Chuyển khoản ngân hàng',
     VNPAY: 'VNPAY',
     MOMO: 'MoMo',
+    PAYOS: 'PayOS',
   };
 
   readonly loading = signal(true);
@@ -33,7 +34,7 @@ export class CheckoutPageComponent {
   readonly error = signal<string | null>(null);
   readonly cart = this.cartService.cart;
 
-  readonly paymentMethods: PaymentMethod[] = ['COD', 'BANK_TRANSFER', 'VNPAY', 'MOMO'];
+  readonly paymentMethods: PaymentMethod[] = ['COD', 'BANK_TRANSFER', 'VNPAY', 'MOMO', 'PAYOS'];
 
   readonly form = this.fb.nonNullable.group({
     receiverName: ['', [Validators.required]],
@@ -74,6 +75,19 @@ export class CheckoutPageComponent {
     this.submitting.set(true);
     this.orderService.checkout(this.form.getRawValue() as CheckoutPayload).subscribe({
       next: (order) => {
+        if (order.paymentMethod === 'PAYOS') {
+          if (!order.checkoutUrl) {
+            this.error.set('Không thể tạo liên kết thanh toán PayOS.');
+            this.submitting.set(false);
+            return;
+          }
+
+          this.success.set(`Đang chuyển tới PayOS cho đơn ${order.orderCode}...`);
+          this.cartService.loadMyCart().subscribe();
+          globalThis.location.assign(order.checkoutUrl);
+          return;
+        }
+
         this.success.set(`Đặt đơn ${order.orderCode} thành công.`);
         this.cartService.loadMyCart().subscribe();
         this.router.navigateByUrl('/shop/orders');
